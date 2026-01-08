@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="pt">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Formulário — Consumo Energético de Servidores</title>
+
+  <style>
+    body{
+      font-family: system-ui, Arial, sans-serif;
+      margin: 24px;
+      background-image: url("Img/Fundo.png");
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+    }
+
+    .container{
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 22px;
+      border-radius: 14px;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(2px);
+    }
+
+    h1{
+      margin-top: 0;
+    }
+
+    form{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px 18px;
+      padding: 16px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.85);
+    }
+
+    .full{
+      grid-column: 1 / -1;
+    }
+
+    label{
+      display: block;
+      font-size: 14px;
+      margin-bottom: 6px;
+    }
+
+    input, select{
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .row{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    button{
+      padding: 11px 14px;
+      border: 0;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    button.primary{
+      background: #111;
+      color: #fff;
+    }
+
+    button.secondary{
+      background: #eee;
+    }
+
+    .note{
+      font-size: 13px;
+      color: #666;
+      margin-top: 6px;
+    }
+
+    .warn{
+      color: #a40000;
+      font-weight: 600;
+    }
+
+    .out{
+      margin-top: 18px;
+      padding: 14px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.95);
+    }
+
+    code{
+      background: #f6f6f6;
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+
+    a{
+      text-decoration: none;
+      color: #111;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <p><a href="index.html">← Voltar à apresentação</a></p>
+
+    <h1>Formulário de Cálculo do Consumo Energético</h1>
+
+    <p class="note">
+      Introduz os parâmetros do modelo e calcula a energia através de
+      <code>E = ∫ P(t) dt</code>.
+    </p>
+
+    <form id="form">
+
+      <!-- CENÁRIO -->
+      <div>
+        <label for="cenario">Cenário de utilização</label>
+        <select id="cenario" required>
+          <option value="normal">Funcionamento normal</option>
+          <option value="pico">Pico de utilização</option>
+          <option value="poupanca">Poupança energética</option>
+        </select>
+        <div class="note" id="cenarioHint"></div>
+      </div>
+
+      <!-- MÉTODO -->
+      <div>
+        <label for="metodo">Método de integração</label>
+        <select id="metodo" required>
+          <option value="trapezios">Método dos Trapézios</option>
+          <option value="simpson">Método de Simpson (n par)</option>
+        </select>
+      </div>
+
+      <!-- INTERVALO -->
+      <div class="full row">
+        <div>
+          <label for="a">Limite inferior a (horas)</label>
+          <input id="a" type="number" step="0.001" required>
+        </div>
+        <div>
+          <label for="b">Limite superior b (horas)</label>
+          <input id="b" type="number" step="0.001" required>
+        </div>
+      </div>
+
+      <!-- SUBDIVISÕES -->
+      <div>
+        <label for="n">Número de subdivisões (n)</label>
+        <input id="n" type="number" step="1" required>
+      </div>
+
+      <!-- T0 -->
+      <div>
+        <label for="t0">Centro do pico t₀ (apenas no pico)</label>
+        <input id="t0" type="number" step="0.001" placeholder="opcional">
+      </div>
+
+      <!-- POTÊNCIA -->
+      <div class="full row">
+        <div>
+          <label for="pidle">P<sub>idle</sub> (W)</label>
+          <input id="pidle" type="number" step="0.1" required>
+        </div>
+        <div>
+          <label for="pmax">P<sub>max</sub> (W)</label>
+          <input id="pmax" type="number" step="0.1" required>
+        </div>
+      </div>
+
+      <!-- LAMBDA NORMAL -->
+      <div class="full row">
+        <div>
+          <label for="base">Base da carga</label>
+          <input id="base" type="number" step="0.01" required>
+        </div>
+        <div>
+          <label for="amp">Amplitude da carga</label>
+          <input id="amp" type="number" step="0.01" required>
+        </div>
+      </div>
+
+      <!-- PARÂMETROS ESPECÍFICOS -->
+      <div class="full row">
+        <div>
+          <label for="k">Parâmetro k (pico)</label>
+          <input id="k" type="number" step="0.1" required>
+        </div>
+        <div>
+          <label for="limite">Limite máximo L (poupança)</label>
+          <input id="limite" type="number" step="0.01" required>
+        </div>
+      </div>
+
+      <!-- OPCIONAIS -->
+      <div class="full row">
+        <div>
+          <label for="tarifa">Tarifa elétrica (€/kWh)</label>
+          <input id="tarifa" type="number" step="0.001" placeholder="opcional">
+        </div>
+        <div>
+          <label for="emissao">Fator de emissão (kgCO₂/kWh)</label>
+          <input id="emissao" type="number" step="0.001" placeholder="opcional">
+        </div>
+      </div>
+
+      <!-- BOTÕES -->
+      <div class="full row">
+        <button class="primary" type="submit">Calcular energia</button>
+        <button class="secondary" type="button" id="btnExemplo">Exemplo do relatório</button>
+      </div>
+
+      <div class="full warn" id="erro"></div>
+    </form>
+
+    <!-- RESULTADOS -->
+    <div class="out" id="out" style="display:none;">
+      <div><strong>Energia consumida (kWh):</strong> <span id="energia"></span></div>
+      <div><strong>Energia consumida (Wh):</strong> <span id="energiaWh"></span></div>
+      <div><strong>Custo (€):</strong> <span id="custo">—</span></div>
+      <div><strong>Emissões CO₂ (kg):</strong> <span id="co2">—</span></div>
+      <p class="note" id="formulasUsadas"></p>
+    </div>
+
+  </div>
+
+  <!-- LÓGICA DOS CÁLCULOS -->
+  <script src="js/calculos.js"></script>
+</body>
+</html>

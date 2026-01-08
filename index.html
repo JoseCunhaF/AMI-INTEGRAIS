@@ -3,13 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Integrais — Consumo Energético de Servidores</title>
+  <title>Consumo Energético de Servidores — AM I</title>
+
   <style>
-    /* Fundo (imagem) */
     body{
       font-family: system-ui, Arial, sans-serif;
       margin: 24px;
-
       background-image: url("Img/Fundo.png");
       background-size: cover;
       background-position: center;
@@ -17,333 +16,109 @@
       background-repeat: no-repeat;
     }
 
-    /* “Cartão” para manter legibilidade por cima do fundo */
     .container{
       max-width: 900px;
       margin: 0 auto;
-      padding: 18px;
+      padding: 22px;
       border-radius: 14px;
-      background: rgba(255, 255, 255, 0.92);
+      background: rgba(255,255,255,0.92);
       backdrop-filter: blur(2px);
     }
 
-    h1 { margin: 0 0 8px; }
-    .muted { color: #555; margin: 0 0 18px; }
-
-    form {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px 18px;
-      padding: 16px;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      background: rgba(255,255,255,0.85);
+    h1{
+      margin-top: 0;
     }
 
-    .full { grid-column: 1 / -1; }
-    label { display: block; font-size: 14px; margin-bottom: 6px; }
-    input, select { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 14px; }
-    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    button { padding: 11px 14px; border: 0; border-radius: 10px; cursor: pointer; font-weight: 600; }
-    button.primary { background: #111; color: #fff; }
-    button.secondary { background: #eee; }
+    p{
+      line-height: 1.6;
+    }
 
-    .out {
+    .btn{
+      display: inline-block;
       margin-top: 16px;
-      padding: 14px;
-      border: 1px solid #ddd;
+      padding: 12px 18px;
       border-radius: 10px;
-      background: rgba(255,255,255,0.92);
+      background: #111;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
     }
 
-    .out strong { display: inline-block; min-width: 170px; }
-    .warn { color: #a40000; font-weight: 600; }
-    .note { font-size: 13px; color: #666; margin-top: 6px; }
-    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    code { background: #f6f6f6; padding: 2px 6px; border-radius: 6px; }
+    .btn:hover{
+      opacity: 0.9;
+    }
+
+    code{
+      background: #f6f6f6;
+      padding: 2px 6px;
+      border-radius: 6px;
+    }
+
+    ul{
+      margin-left: 20px;
+    }
+
+    footer{
+      margin-top: 30px;
+      font-size: 14px;
+      color: #555;
+    }
   </style>
 </head>
+
 <body>
   <div class="container">
-    <h1>Consumo Energético de Servidores (Integrais)</h1>
-    <p class="muted">
-      Vocês inserem os valores no formulário. O programa calcula <code>E = ∫ P(t) dt</code> e devolve energia em kWh (e opcionalmente custo/CO₂).
+
+    <h1>Aplicação dos Integrais no Consumo Energético de Servidores</h1>
+
+    <p>
+      Este projeto foi desenvolvido no âmbito da unidade curricular de
+      <strong>Análise Matemática I</strong> e tem como objetivo aplicar o conceito
+      de <strong>integral definida</strong> ao cálculo do consumo energético de um
+      servidor informático.
     </p>
 
-    <form id="form">
-      <div>
-        <label for="cenario">Cenário</label>
-        <select id="cenario" required>
-          <option value="normal">Funcionamento normal</option>
-          <option value="pico">Pico de utilização</option>
-          <option value="poupanca">Poupança energética (limite)</option>
-        </select>
-        <div class="note" id="cenarioHint"></div>
-      </div>
+    <p>
+      A energia consumida ao longo do tempo é obtida através da integral da
+      potência instantânea:
+    </p>
 
-      <div>
-        <label for="metodo">Método de integração</label>
-        <select id="metodo" required>
-          <option value="trapezios">Trapézios</option>
-          <option value="simpson">Simpson (n tem de ser par)</option>
-        </select>
-        <div class="note">Para mostrar “integrais na prática”, Simpson costuma dar melhor precisão.</div>
-      </div>
+    <p>
+      <code>E = ∫ P(t) dt</code>
+    </p>
 
-      <div class="full row">
-        <div>
-          <label for="a">Limite inferior a (horas)</label>
-          <input id="a" type="number" step="0.001" placeholder="ex: 0" required />
-        </div>
-        <div>
-          <label for="b">Limite superior b (horas)</label>
-          <input id="b" type="number" step="0.001" placeholder="ex: 1" required />
-        </div>
-      </div>
+    <p>
+      A potência do servidor é modelada em função da carga do CPU, segundo a expressão:
+    </p>
 
-      <div>
-        <label for="n">Subdivisões n</label>
-        <input id="n" type="number" step="1" placeholder="ex: 1000" required />
-        <div class="note">n maior → mais precisão (e mais cálculo).</div>
-      </div>
+    <p>
+      <code>P(t) = P<sub>idle</sub> + (P<sub>max</sub> − P<sub>idle</sub>) · λ(t)</code>
+    </p>
 
-      <div>
-        <label for="t0">Centro do pico t₀ (só cenário “Pico”) [horas]</label>
-        <input id="t0" type="number" step="0.001" placeholder="ex: 0.5" />
-        <div class="note">No relatório costuma ser 0.5 quando o intervalo é [0,1].</div>
-      </div>
+    <p>
+      Foram considerados diferentes cenários de funcionamento:
+    </p>
 
-      <div class="full grid2">
-        <div>
-          <label for="pidle">P<sub>idle</sub> (W)</label>
-          <input id="pidle" type="number" step="0.1" placeholder="ex: 120" required />
-        </div>
-        <div>
-          <label for="pmax">P<sub>max</sub> (W)</label>
-          <input id="pmax" type="number" step="0.1" placeholder="ex: 320" required />
-        </div>
-      </div>
+    <ul>
+      <li>Funcionamento normal do servidor</li>
+      <li>Picos de utilização (tráfego elevado)</li>
+      <li>Política de poupança energética</li>
+    </ul>
 
-      <div class="full grid2">
-        <div>
-          <label for="base">Base (para λ normal): base</label>
-          <input id="base" type="number" step="0.01" placeholder="ex: 0.5" required />
-        </div>
-        <div>
-          <label for="amp">Amplitude (para λ normal): amplitude</label>
-          <input id="amp" type="number" step="0.01" placeholder="ex: 0.3" required />
-        </div>
-      </div>
+    <p>
+      Na página seguinte é possível introduzir os parâmetros do modelo e calcular,
+      de forma interativa, a energia consumida através de métodos de integração numérica.
+    </p>
 
-      <div class="full grid2">
-        <div>
-          <label for="k">Parâmetro do pico: k (em e<sup>-k(t-t0)²</sup>)</label>
-          <input id="k" type="number" step="0.1" placeholder="ex: 10" required />
-        </div>
-        <div>
-          <label for="limite">Limite (para poupança): L (em min(L, λ))</label>
-          <input id="limite" type="number" step="0.01" placeholder="ex: 0.6" required />
-        </div>
-      </div>
+    <a class="btn" href="formulario.html">Ir para o formulário</a>
 
-      <div class="full grid2">
-        <div>
-          <label for="tarifa">Tarifa (€/kWh) — opcional</label>
-          <input id="tarifa" type="number" step="0.001" placeholder="ex: 0.20" />
-        </div>
-        <div>
-          <label for="emissao">Fator de emissão (kgCO₂/kWh) — opcional</label>
-          <input id="emissao" type="number" step="0.001" placeholder="ex: 0.25" />
-        </div>
-      </div>
+    <footer>
+      <p>
+        Licenciatura em Engenharia Informática<br>
+        Análise Matemática I
+      </p>
+    </footer>
 
-      <div class="full row">
-        <button class="primary" type="submit">Calcular</button>
-        <button class="secondary" type="button" id="btnExemplo">Preencher exemplo do relatório</button>
-      </div>
-
-      <div class="full" id="erro" class="warn"></div>
-    </form>
-
-    <div class="out" id="out" style="display:none;">
-      <div><strong>Energia (kWh):</strong> <span id="energia"></span></div>
-      <div><strong>Energia (Wh):</strong> <span id="energiaWh"></span></div>
-      <div><strong>Energia (J):</strong> <span id="energiaJ"></span> <span class="note">(se o tempo estivesse em segundos; aqui só para referência)</span></div>
-      <hr />
-      <div><strong>Custo (€):</strong> <span id="custo">—</span></div>
-      <div><strong>CO₂ (kg):</strong> <span id="co2">—</span></div>
-      <p class="note" id="formulasUsadas"></p>
-    </div>
-
-    <script>
-      // ---------- Helpers ----------
-      function toNumber(el) {
-        const v = el.value.trim();
-        return v === "" ? null : Number(v);
-      }
-      function clamp01(x) { return Math.min(1, Math.max(0, x)); }
-
-      function setHint() {
-        const c = document.getElementById("cenario").value;
-        const hint = document.getElementById("cenarioHint");
-        if (c === "normal") hint.textContent = "λ(t) = base + amp·sin(πt)";
-        if (c === "pico") hint.textContent   = "λ(t) = e^{-k·(t−t₀)²}";
-        if (c === "poupanca") hint.textContent = "λ(t) = min(L, base + amp·sin(πt))";
-      }
-
-      document.getElementById("cenario").addEventListener("change", setHint);
-      setHint();
-
-      // ---------- Model ----------
-      function lambdaFactory(params) {
-        const { cenario, base, amp, k, t0, limite } = params;
-
-        return function lambda(t) {
-          let val;
-          if (cenario === "normal") {
-            val = base + amp * Math.sin(Math.PI * t);
-          } else if (cenario === "pico") {
-            val = Math.exp(-k * Math.pow(t - t0, 2));
-          } else { // poupanca
-            const normal = base + amp * Math.sin(Math.PI * t);
-            val = Math.min(limite, normal);
-          }
-          return clamp01(val);
-        };
-      }
-
-      function potenciaFactory(params) {
-        const { pidle, pmax, lambda } = params;
-        return function P(t) {
-          return pidle + (pmax - pidle) * lambda(t);
-        };
-      }
-
-      // ---------- Numerical integration ----------
-      function integrarTrapezios(P, a, b, n) {
-        const h = (b - a) / n;
-        let soma = 0;
-        for (let i = 0; i <= n; i++) {
-          const t = a + i * h;
-          const peso = (i === 0 || i === n) ? 1 : 2;
-          soma += peso * P(t);
-        }
-        return (h / 2) * soma; // W·h
-      }
-
-      function integrarSimpson(P, a, b, n) {
-        const h = (b - a) / n;
-        let soma = P(a) + P(b);
-        for (let i = 1; i < n; i++) {
-          const t = a + i * h;
-          soma += (i % 2 === 0 ? 2 : 4) * P(t);
-        }
-        return (h / 3) * soma; // W·h
-      }
-
-      // ---------- UI ----------
-      const form = document.getElementById("form");
-      const out = document.getElementById("out");
-      const erro = document.getElementById("erro");
-
-      function showError(msg) {
-        erro.innerHTML = msg ? `<p class="warn">${msg}</p>` : "";
-      }
-
-      form.addEventListener("submit", (e) => {
-        e.preventDefault();
-        showError("");
-
-        const cenario = document.getElementById("cenario").value;
-        const metodo = document.getElementById("metodo").value;
-
-        const a = toNumber(document.getElementById("a"));
-        const b = toNumber(document.getElementById("b"));
-        const n = toNumber(document.getElementById("n"));
-
-        const pidle = toNumber(document.getElementById("pidle"));
-        const pmax  = toNumber(document.getElementById("pmax"));
-
-        const base  = toNumber(document.getElementById("base"));
-        const amp   = toNumber(document.getElementById("amp"));
-        const k     = toNumber(document.getElementById("k"));
-        const limite = toNumber(document.getElementById("limite"));
-        const t0raw = toNumber(document.getElementById("t0"));
-
-        const tarifa = toNumber(document.getElementById("tarifa"));
-        const emissao = toNumber(document.getElementById("emissao"));
-
-        if (a === null || b === null || n === null || pidle === null || pmax === null || base === null || amp === null || k === null || limite === null) {
-          showError("Preenche todos os campos obrigatórios.");
-          return;
-        }
-        if (!(b > a)) {
-          showError("O limite superior b tem de ser maior do que a.");
-          return;
-        }
-        if (!Number.isInteger(n) || n <= 0) {
-          showError("n tem de ser um inteiro positivo.");
-          return;
-        }
-        if (pmax < pidle) {
-          showError("Pmax deve ser ≥ Pidle.");
-          return;
-        }
-        if (metodo === "simpson" && (n % 2 !== 0)) {
-          showError("Para Simpson, n tem de ser par.");
-          return;
-        }
-
-        const t0 = (t0raw === null) ? (a + b) / 2 : t0raw;
-
-        const lambda = lambdaFactory({ cenario, base, amp, k, t0, limite });
-        const P = potenciaFactory({ pidle, pmax, lambda });
-
-        const Wh = (metodo === "simpson")
-          ? integrarSimpson(P, a, b, n)
-          : integrarTrapezios(P, a, b, n);
-
-        const kWh = Wh / 1000;
-
-        out.style.display = "block";
-        document.getElementById("energia").textContent = kWh.toFixed(6);
-        document.getElementById("energiaWh").textContent = Wh.toFixed(3);
-        document.getElementById("energiaJ").textContent = (Wh * 3600).toFixed(0);
-
-        document.getElementById("custo").textContent =
-          (tarifa === null) ? "—" : (kWh * tarifa).toFixed(4);
-
-        document.getElementById("co2").textContent =
-          (emissao === null) ? "—" : (kWh * emissao).toFixed(4);
-
-        const formulas = [];
-        formulas.push("Modelo: P(t) = P_idle + (P_max − P_idle)·λ(t)");
-        if (cenario === "normal") formulas.push("Carga: λ(t) = base + amp·sin(πt)");
-        if (cenario === "pico") formulas.push("Carga: λ(t) = e^{−k·(t−t₀)²}");
-        if (cenario === "poupanca") formulas.push("Carga: λ(t) = min(L, base + amp·sin(πt))");
-        formulas.push(`Integral: E = ∫[${a}, ${b}] P(t) dt (tempo em horas)`);
-        formulas.push("Conversão: kWh = (∫ P(t) dt em Wh) / 1000");
-        document.getElementById("formulasUsadas").innerHTML =
-          "<strong>Fórmulas usadas:</strong><br>" + formulas.map(s => "• " + s).join("<br>");
-      });
-
-      document.getElementById("btnExemplo").addEventListener("click", () => {
-        document.getElementById("a").value = "0";
-        document.getElementById("b").value = "1";
-        document.getElementById("n").value = "1000";
-        document.getElementById("pidle").value = "120";
-        document.getElementById("pmax").value = "320";
-        document.getElementById("base").value = "0.5";
-        document.getElementById("amp").value = "0.3";
-        document.getElementById("k").value = "10";
-        document.getElementById("limite").value = "0.6";
-        document.getElementById("t0").value = "0.5";
-        document.getElementById("tarifa").value = "0.20";
-        document.getElementById("emissao").value = "0.25";
-        showError("");
-        setHint();
-      });
-    </script>
   </div>
 </body>
 </html>
