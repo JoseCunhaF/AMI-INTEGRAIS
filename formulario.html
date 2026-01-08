@@ -55,6 +55,7 @@
       border: 1px solid #ccc;
       border-radius: 8px;
       font-size: 14px;
+      box-sizing: border-box;
     }
 
     .row{
@@ -85,6 +86,9 @@
       color: #666;
       margin-top: 6px;
     }
+
+    /* evita “saltos” de alinhamento quando o hint muda */
+    #cenarioHint{ min-height: 18px; }
 
     .warn{
       color: #a40000;
@@ -127,7 +131,7 @@
 
     <form id="form">
 
-      <!-- CENÁRIO -->
+      <!-- LINHA 1 -->
       <div>
         <label for="cenario">Cenário de utilização</label>
         <select id="cenario" required>
@@ -138,7 +142,6 @@
         <div class="note" id="cenarioHint"></div>
       </div>
 
-      <!-- MÉTODO -->
       <div>
         <label for="metodo">Método de integração</label>
         <select id="metodo" required>
@@ -147,76 +150,70 @@
         </select>
       </div>
 
-      <!-- INTERVALO -->
-      <div class="full row">
-        <div>
-          <label for="a">Limite inferior a (horas)</label>
-          <input id="a" type="number" step="0.001" required>
-        </div>
-        <div>
-          <label for="b">Limite superior b (horas)</label>
-          <input id="b" type="number" step="0.001" required>
-        </div>
+      <!-- LINHA 2 -->
+      <div>
+        <label for="a">Limite inferior a (horas)</label>
+        <input id="a" type="number" step="0.001" required>
       </div>
 
-      <!-- SUBDIVISÕES -->
+      <div>
+        <label for="b">Limite superior b (horas)</label>
+        <input id="b" type="number" step="0.001" required>
+      </div>
+
+      <!-- LINHA 3 -->
       <div>
         <label for="n">Número de subdivisões (n)</label>
         <input id="n" type="number" step="1" required>
       </div>
 
-      <!-- T0 -->
       <div>
         <label for="t0">Centro do pico t₀ (apenas no pico)</label>
         <input id="t0" type="number" step="0.001" placeholder="opcional">
       </div>
 
-      <!-- POTÊNCIA -->
-      <div class="full row">
-        <div>
-          <label for="pidle">P<sub>idle</sub> (W)</label>
-          <input id="pidle" type="number" step="0.1" required>
-        </div>
-        <div>
-          <label for="pmax">P<sub>max</sub> (W)</label>
-          <input id="pmax" type="number" step="0.1" required>
-        </div>
+      <!-- LINHA 4 -->
+      <div>
+        <label for="pidle">P<sub>idle</sub> (W)</label>
+        <input id="pidle" type="number" step="0.1" required>
       </div>
 
-      <!-- LAMBDA NORMAL -->
-      <div class="full row">
-        <div>
-          <label for="base">Base da carga</label>
-          <input id="base" type="number" step="0.01" required>
-        </div>
-        <div>
-          <label for="amp">Amplitude da carga</label>
-          <input id="amp" type="number" step="0.01" required>
-        </div>
+      <div>
+        <label for="pmax">P<sub>max</sub> (W)</label>
+        <input id="pmax" type="number" step="0.1" required>
       </div>
 
-      <!-- PARÂMETROS ESPECÍFICOS -->
-      <div class="full row">
-        <div>
-          <label for="k">Parâmetro k (pico)</label>
-          <input id="k" type="number" step="0.1" required>
-        </div>
-        <div>
-          <label for="limite">Limite máximo L (poupança)</label>
-          <input id="limite" type="number" step="0.01" required>
-        </div>
+      <!-- LINHA 5 -->
+      <div>
+        <label for="base">Base da carga</label>
+        <input id="base" type="number" step="0.01" required>
       </div>
 
-      <!-- OPCIONAIS -->
-      <div class="full row">
-        <div>
-          <label for="tarifa">Tarifa elétrica (€/kWh)</label>
-          <input id="tarifa" type="number" step="0.001" placeholder="opcional">
-        </div>
-        <div>
-          <label for="emissao">Fator de emissão (kgCO₂/kWh)</label>
-          <input id="emissao" type="number" step="0.001" placeholder="opcional">
-        </div>
+      <div>
+        <label for="amp">Amplitude da carga</label>
+        <input id="amp" type="number" step="0.01" required>
+      </div>
+
+      <!-- LINHA 6 -->
+      <div>
+        <label for="k">Parâmetro k (pico)</label>
+        <input id="k" type="number" step="0.1" required>
+      </div>
+
+      <div>
+        <label for="limite">Limite máximo L (poupança)</label>
+        <input id="limite" type="number" step="0.01" required>
+      </div>
+
+      <!-- LINHA 7 -->
+      <div>
+        <label for="tarifa">Tarifa elétrica (€/kWh)</label>
+        <input id="tarifa" type="number" step="0.001" placeholder="opcional">
+      </div>
+
+      <div>
+        <label for="emissao">Fator de emissão (kgCO₂/kWh)</label>
+        <input id="emissao" type="number" step="0.001" placeholder="opcional">
       </div>
 
       <!-- BOTÕES -->
