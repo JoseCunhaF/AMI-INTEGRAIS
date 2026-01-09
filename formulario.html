@@ -146,15 +146,15 @@
         <input id="pmax" type="number" step="0.1" min="0" required>
       </div>
 
-      <!-- LINHA 5 -->
+      <!-- LINHA 5 (ATUALIZADA: u(t) em [0,1]) -->
       <div>
-        <label for="base">Base da carga</label>
-        <input id="base" type="number" step="0.01" required>
+        <label for="base">Base da carga (0 a 1)</label>
+        <input id="base" type="number" step="0.01" min="0" max="1" required>
       </div>
 
       <div>
-        <label for="amp">Amplitude da carga</label>
-        <input id="amp" type="number" step="0.01" required>
+        <label for="amp">Amplitude da carga (0 a 1)</label>
+        <input id="amp" type="number" step="0.01" min="0" max="1" required>
       </div>
 
       <!-- LINHA 6 -->
@@ -168,7 +168,7 @@
         <input id="limite" type="number" step="0.1" min="0">
       </div>
 
-      <!-- LINHA 7 (AGORA COM 1 COLUNA, IGUAL AOS OUTROS) -->
+      <!-- LINHA 7 -->
       <div>
         <label for="tarifa">Tarifa elétrica (€/kWh)</label>
         <input id="tarifa" type="number" step="0.001" min="0">
