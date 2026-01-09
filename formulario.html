@@ -124,16 +124,6 @@
 
     <h1>Formulário de Cálculo do Consumo Energético</h1>
 
-    <p class="note">
-      Introduz os parâmetros do modelo e calcula a energia através de
-      <code>E = ∫<sub>a</sub><sup>b</sup> P(t) dt</code>.
-      <br>
-      <small>
-        (com <code>t</code> em horas e <code>P(t)</code> em W, obtém-se <code>E</code> em Wh; para kWh:
-        <code>E(kWh) = (1/1000) · ∫<sub>a</sub><sup>b</sup> P(t) dt</code>)
-      </small>
-    </p>
-
     <form id="form">
 
       <!-- LINHA 1 -->
@@ -208,10 +198,9 @@
       <div>
         <label for="limite">Limite máximo L (W) — apenas na poupança</label>
         <input id="limite" type="number" step="0.1" placeholder="ex.: 260">
-        <div class="note">Na política de poupança: <code>P(t)=min(P_normal(t), L)</code></div>
       </div>
 
-      <!-- LINHA 7 -->
+      <!-- LINHA 7 (mantém como está, mesmo que sejam opcionais) -->
       <div>
         <label for="tarifa">Tarifa elétrica (€/kWh)</label>
         <input id="tarifa" type="number" step="0.001" placeholder="opcional">
@@ -222,22 +211,18 @@
         <input id="emissao" type="number" step="0.001" placeholder="opcional">
       </div>
 
-      <!-- BOTÕES -->
-      <div class="full row">
+      <!-- BOTÕES (só 1 e centrado) -->
+      <div class="full" style="display:flex;justify-content:center;">
         <button class="primary" type="submit">Calcular energia</button>
-        <button class="secondary" type="button" id="btnExemplo">Exemplo do relatório</button>
       </div>
 
       <div class="full warn" id="erro"></div>
     </form>
 
-    <!-- RESULTADOS -->
+    <!-- RESULTADOS (só consumos) -->
     <div class="out" id="out" style="display:none;">
       <div><strong>Energia consumida (kWh):</strong> <span id="energia"></span></div>
       <div><strong>Energia consumida (Wh):</strong> <span id="energiaWh"></span></div>
-      <div><strong>Custo (€):</strong> <span id="custo">—</span></div>
-      <div><strong>Emissões CO₂ (kg):</strong> <span id="co2">—</span></div>
-      <p class="note" id="formulasUsadas"></p>
     </div>
 
   </div>

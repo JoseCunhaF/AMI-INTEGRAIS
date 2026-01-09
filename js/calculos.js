@@ -26,10 +26,10 @@ function setHintAndMetodo() {
 
   const c = cenarioEl.value;
 
-  // Hints coerentes com o relatório
+  // Hints simples (sem a nota da poupança, como pediste)
   if (c === "normal") hint.textContent = "u(t) = base + amp·sin(πt)";
   if (c === "pico") hint.textContent = "u(t) = base + amp·e^{−k·(t−t₀)²}";
-  if (c === "poupanca") hint.textContent = "P(t) = min(P_normal(t), L)  (L em W)";
+  if (c === "poupanca") hint.textContent = ""; // removido
 
   // Recomendação automática do método (pode ser alterado pelo utilizador)
   if (metodoEl) {
@@ -40,13 +40,11 @@ function setHintAndMetodo() {
     }
   }
 
-  // Nota: se Simpson e n ímpar, o submit vai validar e pedir n par
-  // (mantemos simples e robusto)
+  // Se Simpson e n ímpar, informa (não bloqueia aqui)
   if (metodoEl && nEl && metodoEl.value === "simpson") {
     const n = toNumber(nEl);
     if (n !== null && Number.isInteger(n) && n > 0 && (n % 2 !== 0)) {
-      // Não bloqueia já, mas informa
-      hint.textContent += " — (para Simpson, usa n par)";
+      hint.textContent += (hint.textContent ? " — " : "") + "(para Simpson, usa n par)";
     }
   }
 }
@@ -75,7 +73,7 @@ function potenciaFactory({ cenario, pidle, pmax, u, limiteW }) {
     const Pnormal = pidle + (pmax - pidle) * u(t);
 
     if (cenario === "poupanca") {
-      // Política de poupança (Rúben): limitar potência em Watts
+      // Política de poupança: limitar potência em Watts
       return Math.min(limiteW, Pnormal);
     }
 
@@ -110,38 +108,6 @@ function integrarSimpson(P, a, b, n) {
   return (h / 3) * soma;
 }
 
-function preencherExemplo() {
-  // Valores típicos do relatório
-  const set = (id, val) => {
-    const el = document.getElementById(id);
-    if (el) el.value = val;
-  };
-
-  set("a", "0");
-  set("b", "1");
-  set("n", "1000");
-  set("pidle", "120");
-  set("pmax", "320");
-
-  // Normal: base + amp*sin(pi t)
-  set("base", "0.5");
-  set("amp", "0.3");
-
-  // Pico: base + amp*gaussiana
-  set("k", "10");
-  set("t0", "0.5");
-
-  // Poupança: L em Watts (no relatório: 260 W)
-  set("limite", "260");
-
-  // Opcionais (Rafael)
-  set("tarifa", "0.20");
-  set("emissao", "0.25");
-
-  showError("");
-  setHintAndMetodo();
-}
-
 function main() {
   const form = document.getElementById("form");
   if (!form) return;
@@ -152,10 +118,6 @@ function main() {
   if (cenarioEl) cenarioEl.addEventListener("change", setHintAndMetodo);
   if (nEl) nEl.addEventListener("input", setHintAndMetodo);
   setHintAndMetodo();
-
-  // Botão "Exemplo"
-  const btnExemplo = document.getElementById("btnExemplo");
-  if (btnExemplo) btnExemplo.addEventListener("click", preencherExemplo);
 
   // Submit
   form.addEventListener("submit", (e) => {
@@ -178,9 +140,6 @@ function main() {
     const k      = toNumber(document.getElementById("k"));
     const limite = toNumber(document.getElementById("limite")); // Watts na poupança
     const t0raw  = toNumber(document.getElementById("t0"));
-
-    const tarifa  = toNumber(document.getElementById("tarifa"));
-    const emissao = toNumber(document.getElementById("emissao"));
 
     // Validações base
     if (a === null || b === null || n === null || pidle === null || pmax === null || base === null || amp === null) {
@@ -247,35 +206,14 @@ function main() {
 
     const kWh = Wh / 1000;
 
-    // Mostrar resultados
+    // Mostrar resultados (só consumos)
     const out = document.getElementById("out");
     if (out) out.style.display = "block";
 
-    document.getElementById("energia").textContent = kWh.toFixed(6);
-    document.getElementById("energiaWh").textContent = Wh.toFixed(3);
-
-    // Custo e CO2 (opcionais)
-    document.getElementById("custo").textContent =
-      (tarifa === null) ? "—" : (kWh * tarifa).toFixed(4);
-
-    document.getElementById("co2").textContent =
-      (emissao === null) ? "—" : (kWh * emissao).toFixed(4);
-
-    // Fórmulas usadas
-    const formulas = [];
-    formulas.push("Modelo: P_normal(t) = P_idle + (P_max − P_idle)·u(t)");
-    if (cenario === "normal") formulas.push("Carga: u(t) = base + amp·sin(πt)");
-    if (cenario === "pico") formulas.push("Carga: u(t) = base + amp·e^{−k·(t−t₀)²}");
-    if (cenario === "poupanca") formulas.push("Poupança: P(t) = min(P_normal(t), L)  (L em W)");
-    formulas.push(`Integral: E = ∫[${a}, ${b}] P(t) dt (tempo em horas)`);
-    formulas.push("Conversão: kWh = (∫ P(t) dt em Wh) / 1000");
-
-    const formulasEl = document.getElementById("formulasUsadas");
-    if (formulasEl) {
-      formulasEl.innerHTML =
-        "<strong>Fórmulas usadas:</strong><br>" +
-        formulas.map(s => "• " + s).join("<br>");
-    }
+    const energiaEl = document.getElementById("energia");
+    const energiaWhEl = document.getElementById("energiaWh");
+    if (energiaEl) energiaEl.textContent = kWh.toFixed(6);
+    if (energiaWhEl) energiaWhEl.textContent = Wh.toFixed(3);
   });
 }
 
