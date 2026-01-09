@@ -27,36 +27,50 @@
 
     h1{
       margin-top: 0;
-      margin-bottom: 6px; /* ↓ para caber tudo sem scroll */
+      margin-bottom: 6px;
       font-size: 28px;
       line-height: 1.2;
-      white-space: nowrap; /* 1 linha */
+      white-space: nowrap;
     }
 
-    /* bloco que estava no footer, agora em cima */
     .top-meta{
-      margin: 0 0 12px; /* ↓ espaço controlado */
+      margin: 0 0 12px;
       font-size: 14px;
       color: #555;
       text-align: center;
       line-height: 1.4;
     }
 
-    /* Em ecrãs pequenos, permite quebrar para não cortar */
     @media (max-width: 700px){
       h1{ white-space: normal; }
     }
 
     p{
       line-height: 1.6;
-      margin-top: 10px;   /* ↓ ligeiramente */
-      margin-bottom: 10px;/* ↓ ligeiramente */
+      margin: 10px 0;
+    }
+
+    .section-title{
+      margin-top: 18px;
+      margin-bottom: 8px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .formula{
+      margin: 6px 0;
+    }
+
+    .formula-desc{
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 10px;
     }
 
     .btn{
       display: block;
       width: fit-content;
-      margin: 12px auto 0; /* ↓ para caber melhor */
+      margin: 14px auto 0;
       padding: 12px 18px;
       border-radius: 10px;
       background: #111;
@@ -66,27 +80,12 @@
       text-align: center;
     }
 
-    .btn:hover{
-      opacity: 0.9;
-    }
-
-    code{
-      background: #f6f6f6;
-      padding: 2px 6px;
-      border-radius: 6px;
-    }
+    .btn:hover{ opacity: 0.9; }
 
     ul{
       margin-left: 20px;
-      margin-top: 8px;   /* ↓ ligeiramente */
-      margin-bottom: 8px;/* ↓ ligeiramente */
-    }
-
-    footer{
-      margin-top: 10px; /* ↓ para não empurrar conteúdo */
-      font-size: 14px;
-      color: #555;
-      text-align: center; /* centrado */
+      margin-top: 8px;
+      margin-bottom: 8px;
     }
   </style>
 </head>
@@ -96,12 +95,12 @@
 
     <h1>Aplicação dos Integrais no Consumo Energético de Servidores</h1>
 
-    <!-- o que estava em baixo passa para cima -->
     <p class="top-meta">
       Licenciatura em Engenharia Informática<br>
       Análise Matemática I
     </p>
 
+    <!-- DESCRIÇÃO DO PROJETO (INALTERADA) -->
     <p>
       Este projeto foi desenvolvido no âmbito da unidade curricular de
       <strong>Análise Matemática I</strong> e tem como objetivo aplicar o conceito
@@ -111,37 +110,63 @@
 
     <p>
       A energia consumida ao longo do tempo é obtida através da integral da
-      potência instantânea:
+      potência instantânea.
     </p>
 
-    <p>
-      <code>E = ∫<sub>0</sub><sup>1</sup> P(t) dt</code><br>
-      <small>
-        (com <code>t</code> em horas e <code>P(t)</code> em W, obtém-se <code>E</code> em Wh;
-        para kWh: <code>E(kWh) = (1/1000) · ∫<sub>0</sub><sup>1</sup> P(t) dt</code>)
-      </small>
-    </p>
+    <!-- SECÇÃO DE FÓRMULAS -->
+    <div class="section-title">Fórmulas do modelo</div>
 
-    <p>
-      A potência do servidor é modelada em função da carga do CPU, segundo a expressão:
-    </p>
+    <div class="formula">
+      \[
+        E = \int_{a}^{b} P(t)\,dt
+      \]
+    </div>
+    <div class="formula-desc">
+      Energia total consumida pelo servidor no intervalo de tempo \([a,b]\).
+    </div>
 
-    <p>
-      <code>P(t) = P<sub>idle</sub> + (P<sub>max</sub> − P<sub>idle</sub>) · u(t)</code><br>
-      <small>
-        No trabalho: <code>P<sub>idle</sub> = 120 W</code> e <code>P<sub>max</sub> = 320 W</code>
-        (ajustáveis no formulário).
-      </small>
-    </p>
+    <div class="formula">
+      \[
+        E_{kWh}=\frac{1}{1000}\int_{a}^{b} P(t)\,dt
+      \]
+    </div>
+    <div class="formula-desc">
+      Conversão da energia obtida para quilowatt-hora (kWh).
+    </div>
 
-    <p>
-      Foram considerados diferentes cenários de funcionamento:
-    </p>
+    <div class="formula">
+      \[
+        P(t)=P_{idle}+\bigl(P_{max}-P_{idle}\bigr)\,u(t)
+      \]
+    </div>
+    <div class="formula-desc">
+      Modelo da potência instantânea do servidor em função da carga do CPU.
+    </div>
+
+    <div class="formula">
+      \[
+        C = T \cdot E_{kWh}
+      \]
+    </div>
+    <div class="formula-desc">
+      Custo económico associado ao consumo energético.
+    </div>
+
+    <div class="formula">
+      \[
+        CO_{2} = f \cdot E_{kWh}
+      \]
+    </div>
+    <div class="formula-desc">
+      Estimativa das emissões de dióxido de carbono associadas ao consumo.
+    </div>
+
+    <!-- CENÁRIOS (AJUSTADOS) -->
+    <p class="section-title">Cenários considerados</p>
 
     <ul>
       <li>Funcionamento normal do servidor</li>
       <li>Picos de utilização (tráfego elevado)</li>
-      <li>Política de poupança energética</li>
     </ul>
 
     <p>
@@ -151,9 +176,15 @@
 
     <a class="btn" href="formulario.html">Ir para o formulário</a>
 
-    <!-- footer mantido (sem repetir conteúdo); podes remover se quiseres -->
-    <footer></footer>
-
   </div>
+
+  <!-- MathJax -->
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(','\\)']], displayMath: [['\\[','\\]']] }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
 </body>
 </html>
