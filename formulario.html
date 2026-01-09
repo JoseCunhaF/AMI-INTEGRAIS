@@ -116,56 +116,62 @@
       <!-- LINHA 2 -->
       <div>
         <label for="a">Limite inferior a (horas)</label>
-        <input id="a" type="number" step="0.001" inputmode="decimal" required>
+        <input id="a" type="number" step="0.001" required>
       </div>
 
       <div>
         <label for="b">Limite superior b (horas)</label>
-        <input id="b" type="number" step="0.001" inputmode="decimal" required>
+        <input id="b" type="number" step="0.001" required>
       </div>
 
       <!-- LINHA 3 -->
       <div>
         <label for="n">Número de subdivisões (n)</label>
-        <input id="n" type="number" step="1" min="1" inputmode="numeric" required>
+        <input id="n" type="number" step="1" min="1" required>
       </div>
 
       <div>
         <label for="t0">Centro do pico t₀ (apenas no pico)</label>
-        <input id="t0" type="number" step="0.001" inputmode="decimal">
+        <input id="t0" type="number" step="0.001">
       </div>
 
       <!-- LINHA 4 -->
       <div>
         <label for="pidle">P<sub>idle</sub> (W)</label>
-        <input id="pidle" type="number" step="0.1" min="0" inputmode="decimal" required>
+        <input id="pidle" type="number" step="0.1" min="0" required>
       </div>
 
       <div>
         <label for="pmax">P<sub>max</sub> (W)</label>
-        <input id="pmax" type="number" step="0.1" min="0" inputmode="decimal" required>
+        <input id="pmax" type="number" step="0.1" min="0" required>
       </div>
 
       <!-- LINHA 5 -->
       <div>
         <label for="base">Base da carga</label>
-        <input id="base" type="number" step="0.01" inputmode="decimal" required>
+        <input id="base" type="number" step="0.01" required>
       </div>
 
       <div>
         <label for="amp">Amplitude da carga</label>
-        <input id="amp" type="number" step="0.01" inputmode="decimal" required>
+        <input id="amp" type="number" step="0.01" required>
       </div>
 
       <!-- LINHA 6 -->
       <div>
         <label for="k">Parâmetro k (apenas no pico)</label>
-        <input id="k" type="number" step="0.1" inputmode="decimal">
+        <input id="k" type="number" step="0.1">
       </div>
 
       <div>
         <label for="limite">Limite máximo L (W) — apenas na poupança</label>
-        <input id="limite" type="number" step="0.1" min="0" inputmode="decimal">
+        <input id="limite" type="number" step="0.1" min="0">
+      </div>
+
+      <!-- LINHA 7 -->
+      <div class="full">
+        <label for="tarifa">Tarifa elétrica (€/kWh)</label>
+        <input id="tarifa" type="number" step="0.001" min="0">
       </div>
 
       <!-- BOTÃO centrado -->
@@ -176,10 +182,11 @@
       <div class="full warn" id="erro"></div>
     </form>
 
-    <!-- RESULTADOS (só no final) -->
+    <!-- RESULTADOS -->
     <div class="out" id="out" style="display:none;">
       <div><strong>Energia consumida (kWh):</strong> <span id="energia"></span></div>
       <div><strong>Energia consumida (Wh):</strong> <span id="energiaWh"></span></div>
+      <div><strong>Custo (€):</strong> <span id="custo">—</span></div>
       <div><strong>Emissões CO₂ (kg):</strong> <span id="co2"></span></div>
     </div>
 

@@ -5,7 +5,8 @@
 const EMISSAO_CO2_KG_POR_KWH = 0.25; // podes ajustar se precisares
 
 function toNumber(el) {
-  const v = el.value.trim();
+  if (!el) return null;
+  const v = String(el.value ?? "").trim();
   return v === "" ? null : Number(v);
 }
 
@@ -113,6 +114,9 @@ function main() {
     const limite = toNumber(document.getElementById("limite")); // Watts na poupança
     const t0raw  = toNumber(document.getElementById("t0"));
 
+    // ✅ tarifa para custo (pode ficar vazio)
+    const tarifa = toNumber(document.getElementById("tarifa"));
+
     // Validações base
     if (a === null || b === null || n === null || pidle === null || pmax === null || base === null || amp === null) {
       showError("Preenche todos os campos obrigatórios.");
@@ -184,10 +188,16 @@ function main() {
 
     const energiaEl = document.getElementById("energia");
     const energiaWhEl = document.getElementById("energiaWh");
+    const custoEl = document.getElementById("custo");
     const co2El = document.getElementById("co2");
 
     if (energiaEl) energiaEl.textContent = kWh.toFixed(6);
     if (energiaWhEl) energiaWhEl.textContent = Wh.toFixed(3);
+
+    // ✅ Custo (só se tarifa existir; senão fica "—")
+    if (custoEl) {
+      custoEl.textContent = (tarifa === null) ? "—" : (kWh * tarifa).toFixed(4);
+    }
 
     // CO2 automático (aparece apenas no fim, junto aos consumos)
     if (co2El) {
