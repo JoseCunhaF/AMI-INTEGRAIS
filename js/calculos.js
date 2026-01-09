@@ -2,7 +2,7 @@
 // Lógica de cálculo (u(t), P(t), integrais) separada do HTML
 
 // CO2 calculado automaticamente (o utilizador NÃO insere nada)
-const EMISSAO_CO2_KG_POR_KWH = 0.25; // podes ajustar se precisares
+const EMISSAO_CO2_KG_POR_KWH = 0.25; // ajusta apenas se o relatório usar outro valor
 
 function toNumber(el) {
   if (!el) return null;
@@ -114,7 +114,7 @@ function main() {
     const limite = toNumber(document.getElementById("limite")); // Watts na poupança
     const t0raw  = toNumber(document.getElementById("t0"));
 
-    // ✅ tarifa para custo (pode ficar vazio)
+    // Tarifa para custo (pode ficar vazio)
     const tarifa = toNumber(document.getElementById("tarifa"));
 
     // Validações base
@@ -136,6 +136,12 @@ function main() {
     }
     if (metodo === "simpson" && (n % 2 !== 0)) {
       showError("Para Simpson, n tem de ser par.");
+      return;
+    }
+
+    // ✅ coerência com u(t) (carga relativa)
+    if (base < 0 || base > 1 || amp < 0 || amp > 1) {
+      showError("Base e amplitude da carga devem estar entre 0 e 1.");
       return;
     }
 
@@ -164,6 +170,12 @@ function main() {
 
     // Se t0 não vier, assume meio do intervalo
     const t0 = (t0raw === null) ? (a + b) / 2 : t0raw;
+
+    // ✅ mais rigor: se o utilizador forneceu t0, validar que está em [a,b]
+    if (cenario === "pico" && t0raw !== null && (t0raw < a || t0raw > b)) {
+      showError("No cenário Pico, t₀ deve estar dentro do intervalo [a, b].");
+      return;
+    }
 
     // Construir funções
     const u = cargaFactory({ cenario, base, amp, k: (k ?? 1), t0 });
@@ -194,12 +206,12 @@ function main() {
     if (energiaEl) energiaEl.textContent = kWh.toFixed(6);
     if (energiaWhEl) energiaWhEl.textContent = Wh.toFixed(3);
 
-    // ✅ Custo (só se tarifa existir; senão fica "—")
+    // Custo (só se tarifa existir; senão fica "—")
     if (custoEl) {
       custoEl.textContent = (tarifa === null) ? "—" : (kWh * tarifa).toFixed(4);
     }
 
-    // CO2 automático (aparece apenas no fim, junto aos consumos)
+    // CO2 automático
     if (co2El) {
       const co2 = kWh * EMISSAO_CO2_KG_POR_KWH;
       co2El.textContent = co2.toFixed(4);
