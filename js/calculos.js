@@ -1,6 +1,9 @@
 // js/calculos.js
 // Lógica de cálculo (u(t), P(t), integrais) separada do HTML
 
+// CO2 calculado automaticamente (o utilizador NÃO insere nada)
+const EMISSAO_CO2_KG_POR_KWH = 0.25; // podes ajustar se precisares
+
 function toNumber(el) {
   const v = el.value.trim();
   return v === "" ? null : Number(v);
@@ -16,37 +19,14 @@ function showError(msg) {
   erro.innerHTML = msg ? `<p style="color:#a40000;font-weight:600">${msg}</p>` : "";
 }
 
-function setHintAndMetodo() {
+// Só recomenda o método (sem hints por baixo do cenário)
+function setMetodoRecomendado() {
   const cenarioEl = document.getElementById("cenario");
-  const hint = document.getElementById("cenarioHint");
   const metodoEl = document.getElementById("metodo");
-  const nEl = document.getElementById("n");
-
-  if (!cenarioEl || !hint) return;
+  if (!cenarioEl || !metodoEl) return;
 
   const c = cenarioEl.value;
-
-  // Hints simples (sem a nota da poupança, como pediste)
-  if (c === "normal") hint.textContent = "u(t) = base + amp·sin(πt)";
-  if (c === "pico") hint.textContent = "u(t) = base + amp·e^{−k·(t−t₀)²}";
-  if (c === "poupanca") hint.textContent = ""; // removido
-
-  // Recomendação automática do método (pode ser alterado pelo utilizador)
-  if (metodoEl) {
-    if (c === "poupanca") {
-      metodoEl.value = "trapezios";
-    } else {
-      metodoEl.value = "simpson";
-    }
-  }
-
-  // Se Simpson e n ímpar, informa (não bloqueia aqui)
-  if (metodoEl && nEl && metodoEl.value === "simpson") {
-    const n = toNumber(nEl);
-    if (n !== null && Number.isInteger(n) && n > 0 && (n % 2 !== 0)) {
-      hint.textContent += (hint.textContent ? " — " : "") + "(para Simpson, usa n par)";
-    }
-  }
+  metodoEl.value = (c === "poupanca") ? "trapezios" : "simpson";
 }
 
 // u(t): carga relativa (0..1)
@@ -55,10 +35,10 @@ function cargaFactory({ cenario, base, amp, k, t0 }) {
     let val;
 
     if (cenario === "pico") {
-      // Pico (Ivo): u(t) = base + amp * exp(-k*(t - t0)^2)
+      // Pico: u(t) = base + amp * exp(-k*(t - t0)^2)
       val = base + amp * Math.exp(-k * Math.pow(t - t0, 2));
     } else {
-      // Normal (José) e base para poupança (Rúben): u(t) = base + amp*sin(pi t)
+      // Normal e base para poupança: u(t) = base + amp*sin(pi t)
       val = base + amp * Math.sin(Math.PI * t);
     }
 
@@ -71,13 +51,7 @@ function potenciaFactory({ cenario, pidle, pmax, u, limiteW }) {
   // P_normal(t) = P_idle + (P_max - P_idle) * u(t)
   return function P(t) {
     const Pnormal = pidle + (pmax - pidle) * u(t);
-
-    if (cenario === "poupanca") {
-      // Política de poupança: limitar potência em Watts
-      return Math.min(limiteW, Pnormal);
-    }
-
-    return Pnormal;
+    return (cenario === "poupanca") ? Math.min(limiteW, Pnormal) : Pnormal;
   };
 }
 
@@ -112,12 +86,10 @@ function main() {
   const form = document.getElementById("form");
   if (!form) return;
 
-  // Atualizar hint e método recomendado
+  // Método recomendado por cenário (sem hints)
   const cenarioEl = document.getElementById("cenario");
-  const nEl = document.getElementById("n");
-  if (cenarioEl) cenarioEl.addEventListener("change", setHintAndMetodo);
-  if (nEl) nEl.addEventListener("input", setHintAndMetodo);
-  setHintAndMetodo();
+  if (cenarioEl) cenarioEl.addEventListener("change", setMetodoRecomendado);
+  setMetodoRecomendado();
 
   // Submit
   form.addEventListener("submit", (e) => {
@@ -206,14 +178,22 @@ function main() {
 
     const kWh = Wh / 1000;
 
-    // Mostrar resultados (só consumos)
+    // Mostrar resultados
     const out = document.getElementById("out");
     if (out) out.style.display = "block";
 
     const energiaEl = document.getElementById("energia");
     const energiaWhEl = document.getElementById("energiaWh");
+    const co2El = document.getElementById("co2");
+
     if (energiaEl) energiaEl.textContent = kWh.toFixed(6);
     if (energiaWhEl) energiaWhEl.textContent = Wh.toFixed(3);
+
+    // CO2 automático (aparece apenas no fim, junto aos consumos)
+    if (co2El) {
+      const co2 = kWh * EMISSAO_CO2_KG_POR_KWH;
+      co2El.textContent = co2.toFixed(4);
+    }
   });
 }
 

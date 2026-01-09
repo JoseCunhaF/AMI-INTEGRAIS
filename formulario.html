@@ -25,9 +25,7 @@
       backdrop-filter: blur(2px);
     }
 
-    h1{
-      margin-top: 0;
-    }
+    h1{ margin-top: 0; }
 
     form{
       display: grid;
@@ -39,9 +37,7 @@
       background: rgba(255,255,255,0.85);
     }
 
-    .full{
-      grid-column: 1 / -1;
-    }
+    .full{ grid-column: 1 / -1; }
 
     label{
       display: block;
@@ -56,12 +52,7 @@
       border-radius: 8px;
       font-size: 14px;
       box-sizing: border-box;
-    }
-
-    .row{
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
+      background: #fff;
     }
 
     button{
@@ -70,25 +61,9 @@
       border-radius: 10px;
       cursor: pointer;
       font-weight: 600;
-    }
-
-    button.primary{
       background: #111;
       color: #fff;
     }
-
-    button.secondary{
-      background: #eee;
-    }
-
-    .note{
-      font-size: 13px;
-      color: #666;
-      margin-top: 6px;
-    }
-
-    /* evita “saltos” de alinhamento quando o hint muda */
-    #cenarioHint{ min-height: 18px; }
 
     .warn{
       color: #a40000;
@@ -101,12 +76,6 @@
       border: 1px solid #ddd;
       border-radius: 10px;
       background: rgba(255,255,255,0.95);
-    }
-
-    code{
-      background: #f6f6f6;
-      padding: 2px 6px;
-      border-radius: 6px;
     }
 
     a{
@@ -134,7 +103,6 @@
           <option value="pico">Pico de utilização</option>
           <option value="poupanca">Poupança energética</option>
         </select>
-        <div class="note" id="cenarioHint"></div>
       </div>
 
       <div>
@@ -148,86 +116,75 @@
       <!-- LINHA 2 -->
       <div>
         <label for="a">Limite inferior a (horas)</label>
-        <input id="a" type="number" step="0.001" required>
+        <input id="a" type="number" step="0.001" inputmode="decimal" required>
       </div>
 
       <div>
         <label for="b">Limite superior b (horas)</label>
-        <input id="b" type="number" step="0.001" required>
+        <input id="b" type="number" step="0.001" inputmode="decimal" required>
       </div>
 
       <!-- LINHA 3 -->
       <div>
         <label for="n">Número de subdivisões (n)</label>
-        <input id="n" type="number" step="1" required>
+        <input id="n" type="number" step="1" min="1" inputmode="numeric" required>
       </div>
 
       <div>
         <label for="t0">Centro do pico t₀ (apenas no pico)</label>
-        <input id="t0" type="number" step="0.001" placeholder="opcional">
+        <input id="t0" type="number" step="0.001" inputmode="decimal">
       </div>
 
       <!-- LINHA 4 -->
       <div>
         <label for="pidle">P<sub>idle</sub> (W)</label>
-        <input id="pidle" type="number" step="0.1" required>
+        <input id="pidle" type="number" step="0.1" min="0" inputmode="decimal" required>
       </div>
 
       <div>
         <label for="pmax">P<sub>max</sub> (W)</label>
-        <input id="pmax" type="number" step="0.1" required>
+        <input id="pmax" type="number" step="0.1" min="0" inputmode="decimal" required>
       </div>
 
       <!-- LINHA 5 -->
       <div>
         <label for="base">Base da carga</label>
-        <input id="base" type="number" step="0.01" required>
+        <input id="base" type="number" step="0.01" inputmode="decimal" required>
       </div>
 
       <div>
         <label for="amp">Amplitude da carga</label>
-        <input id="amp" type="number" step="0.01" required>
+        <input id="amp" type="number" step="0.01" inputmode="decimal" required>
       </div>
 
       <!-- LINHA 6 -->
       <div>
         <label for="k">Parâmetro k (apenas no pico)</label>
-        <input id="k" type="number" step="0.1" placeholder="ex.: 10 (pico)">
+        <input id="k" type="number" step="0.1" inputmode="decimal">
       </div>
 
       <div>
         <label for="limite">Limite máximo L (W) — apenas na poupança</label>
-        <input id="limite" type="number" step="0.1" placeholder="ex.: 260">
+        <input id="limite" type="number" step="0.1" min="0" inputmode="decimal">
       </div>
 
-      <!-- LINHA 7 (mantém como está, mesmo que sejam opcionais) -->
-      <div>
-        <label for="tarifa">Tarifa elétrica (€/kWh)</label>
-        <input id="tarifa" type="number" step="0.001" placeholder="opcional">
-      </div>
-
-      <div>
-        <label for="emissao">Fator de emissão (kgCO₂/kWh)</label>
-        <input id="emissao" type="number" step="0.001" placeholder="opcional">
-      </div>
-
-      <!-- BOTÕES (só 1 e centrado) -->
+      <!-- BOTÃO centrado -->
       <div class="full" style="display:flex;justify-content:center;">
-        <button class="primary" type="submit">Calcular energia</button>
+        <button type="submit">Calcular energia</button>
       </div>
 
       <div class="full warn" id="erro"></div>
     </form>
 
-    <!-- RESULTADOS (só consumos) -->
+    <!-- RESULTADOS (só no final) -->
     <div class="out" id="out" style="display:none;">
       <div><strong>Energia consumida (kWh):</strong> <span id="energia"></span></div>
       <div><strong>Energia consumida (Wh):</strong> <span id="energiaWh"></span></div>
+      <div><strong>Emissões CO₂ (kg):</strong> <span id="co2"></span></div>
     </div>
 
   </div>
 
-  <!-- LÓGICA DOS CÁLCULOS -->
   <script src="js/calculos.js"></script>
 </body>
 </html>
