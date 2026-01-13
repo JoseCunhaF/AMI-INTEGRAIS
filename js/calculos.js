@@ -20,51 +20,7 @@ function showError(msg) {
   erro.innerHTML = msg ? `<p style="color:#a40000;font-weight:600">${msg}</p>` : "";
 }
 
-// Mostra/esconde inputs conforme o cenário (mantém o resto igual)
-function atualizarCamposPorCenario() {
-  const cenarioEl = document.getElementById("cenario");
-  if (!cenarioEl) return;
-
-  const cenario = cenarioEl.value;
-
-  const campoT0 = document.getElementById("campo-t0");
-  const campoK = document.getElementById("campo-k");
-  const campoLimite = document.getElementById("campo-limite");
-
-  const inputT0 = document.getElementById("t0");
-  const inputK = document.getElementById("k");
-  const inputLimite = document.getElementById("limite");
-
-  // Esconde tudo por defeito
-  if (campoT0) campoT0.style.display = "none";
-  if (campoK) campoK.style.display = "none";
-  if (campoLimite) campoLimite.style.display = "none";
-
-  // Pico: mostrar t0 e k
-  if (cenario === "pico") {
-    if (campoT0) campoT0.style.display = "";
-    if (campoK) campoK.style.display = "";
-    // Limite não se aplica
-    if (inputLimite) inputLimite.value = "";
-  }
-
-  // Poupança: mostrar limite L
-  if (cenario === "poupanca") {
-    if (campoLimite) campoLimite.style.display = "";
-    // t0 e k não se aplicam
-    if (inputT0) inputT0.value = "";
-    if (inputK) inputK.value = "";
-  }
-
-  // Normal: não mostrar nenhum destes
-  if (cenario === "normal") {
-    if (inputT0) inputT0.value = "";
-    if (inputK) inputK.value = "";
-    if (inputLimite) inputLimite.value = "";
-  }
-}
-
-// Só recomenda o método (sem hints por baixo do cenário)
+// Recomendação automática do método (sem hints)
 function setMetodoRecomendado() {
   const cenarioEl = document.getElementById("cenario");
   const metodoEl = document.getElementById("metodo");
@@ -73,6 +29,59 @@ function setMetodoRecomendado() {
   const c = cenarioEl.value;
   metodoEl.value = (c === "poupanca") ? "trapezios" : "simpson";
 }
+
+/* ==========================
+   UI dinâmica por cenário
+   ========================== */
+
+function setFieldState(inputId, { show = true, required = false, clearWhenHide = true, blockId = null } = {}) {
+  const el = document.getElementById(inputId);
+  if (!el) return;
+
+  const block =
+    (blockId ? document.getElementById(blockId) : null) ||
+    el.closest("div") ||
+    el.parentElement;
+
+  if (block) block.style.display = show ? "" : "none";
+
+  // quando escondido, desativa (não interfere com validação HTML e nem com cálculo)
+  el.disabled = !show;
+  el.required = !!(show && required);
+
+  if (!show && clearWhenHide) el.value = "";
+}
+
+function applyScenarioUI() {
+  const cenarioEl = document.getElementById("cenario");
+  if (!cenarioEl) return;
+
+  const c = cenarioEl.value;
+
+  // Pico: t0 (opcional), k (obrigatório)
+  setFieldState("t0", { show: c === "pico", required: false, blockId: "block-t0" });
+  setFieldState("k",  { show: c === "pico", required: true,  blockId: "block-k" });
+
+  // Poupança: limite (obrigatório)
+  setFieldState("limite", { show: c === "poupanca", required: true, blockId: "block-limite" });
+
+  // Tarifa sempre visível (custo em todos os cenários)
+  // (não precisa de blocoId porque não escondemos)
+  const tarifaEl = document.getElementById("tarifa");
+  if (tarifaEl) {
+    tarifaEl.disabled = false;
+    tarifaEl.required = false;
+  }
+
+  // Limpar mensagens/resultado ao trocar cenário (fica mais limpo)
+  showError("");
+  const out = document.getElementById("out");
+  if (out) out.style.display = "none";
+}
+
+/* ==========================
+   Modelo matemático
+   ========================== */
 
 // u(t): carga relativa (0..1)
 function cargaFactory({ cenario, base, amp, k, t0 }) {
@@ -131,18 +140,19 @@ function main() {
   const form = document.getElementById("form");
   if (!form) return;
 
-  // Método recomendado por cenário (sem hints)
   const cenarioEl = document.getElementById("cenario");
+
+  // Aplicar UI e método logo ao carregar
+  setMetodoRecomendado();
+  applyScenarioUI();
+
+  // Quando muda o cenário: atualiza método recomendado + UI
   if (cenarioEl) {
     cenarioEl.addEventListener("change", () => {
       setMetodoRecomendado();
-      atualizarCamposPorCenario();
-      showError(""); // limpa erro ao trocar cenário
+      applyScenarioUI();
     });
   }
-
-  setMetodoRecomendado();
-  atualizarCamposPorCenario();
 
   // Submit
   form.addEventListener("submit", (e) => {
@@ -162,6 +172,7 @@ function main() {
     const base = toNumber(document.getElementById("base"));
     const amp  = toNumber(document.getElementById("amp"));
 
+    // Estes podem estar escondidos/disabled => vêm null (ok)
     const k      = toNumber(document.getElementById("k"));
     const limite = toNumber(document.getElementById("limite")); // Watts na poupança
     const t0raw  = toNumber(document.getElementById("t0"));
@@ -191,7 +202,7 @@ function main() {
       return;
     }
 
-    // coerência com u(t) (carga relativa)
+    // coerência com u(t)
     if (base < 0 || base > 1 || amp < 0 || amp > 1) {
       showError("Base e amplitude da carga devem estar entre 0 e 1.");
       return;
@@ -223,7 +234,7 @@ function main() {
     // Se t0 não vier, assume meio do intervalo
     const t0 = (t0raw === null) ? (a + b) / 2 : t0raw;
 
-    // mais rigor: se o utilizador forneceu t0, validar que está em [a,b]
+    // Se o utilizador forneceu t0 no pico, validar que está em [a,b]
     if (cenario === "pico" && t0raw !== null && (t0raw < a || t0raw > b)) {
       showError("No cenário Pico, t₀ deve estar dentro do intervalo [a, b].");
       return;

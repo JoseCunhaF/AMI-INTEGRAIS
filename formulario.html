@@ -130,7 +130,8 @@
         <input id="n" type="number" step="1" min="1" required>
       </div>
 
-      <div id="campo-t0">
+      <!-- (t0) bloco com id para facilitar show/hide -->
+      <div id="block-t0">
         <label for="t0">Centro do pico t₀ (apenas no pico)</label>
         <input id="t0" type="number" step="0.001">
       </div>
@@ -146,7 +147,7 @@
         <input id="pmax" type="number" step="0.1" min="0" required>
       </div>
 
-      <!-- LINHA 5 (ATUALIZADA: u(t) em [0,1]) -->
+      <!-- LINHA 5 -->
       <div>
         <label for="base">Base da carga (0 a 1)</label>
         <input id="base" type="number" step="0.01" min="0" max="1" required>
@@ -158,18 +159,20 @@
       </div>
 
       <!-- LINHA 6 -->
-      <div id="campo-k">
+      <!-- (k) bloco com id -->
+      <div id="block-k">
         <label for="k">Parâmetro k (apenas no pico)</label>
         <input id="k" type="number" step="0.1">
       </div>
 
-      <div id="campo-limite">
+      <!-- (limite) bloco com id -->
+      <div id="block-limite">
         <label for="limite">Limite máximo L (W) — apenas na poupança</label>
         <input id="limite" type="number" step="0.1" min="0">
       </div>
 
       <!-- LINHA 7 -->
-      <div>
+      <div class="full">
         <label for="tarifa">Tarifa elétrica (€/kWh)</label>
         <input id="tarifa" type="number" step="0.001" min="0">
       </div>
