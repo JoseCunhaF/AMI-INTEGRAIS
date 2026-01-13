@@ -218,9 +218,6 @@ function main() {
     const pidle = toNumber(document.getElementById("pidle"));
     const pmax  = toNumber(document.getElementById("pmax"));
 
-    const base = toNumber(document.getElementById("base"));
-    const amp  = toNumber(document.getElementById("amp"));
-
     // Estes podem estar escondidos/disabled => vêm null (ok)
     const k      = toNumber(document.getElementById("k"));
     const limite = toNumber(document.getElementById("limite")); // Watts na poupança
@@ -229,8 +226,26 @@ function main() {
     // Tarifa para custo (pode ficar vazio)
     const tarifa = toNumber(document.getElementById("tarifa"));
 
-    // Validações base
-    if (a === null || b === null || n === null || pidle === null || pmax === null || base === null || amp === null) {
+    // Parâmetros de carga definidos automaticamente por cenário
+    let base, amp;
+
+    if (cenario === "normal") {
+      base = 0.35;
+      amp  = 0.25;
+    } else if (cenario === "pico") {
+      base = 0.30;
+      amp  = 0.60;
+    } else if (cenario === "poupanca") {
+      base = 0.35;
+      amp  = 0.25;
+    } else {
+      // fallback (não deve acontecer)
+      base = 0.35;
+      amp  = 0.25;
+    }
+
+    // Validações base (base/amp já não vêm do utilizador)
+    if (a === null || b === null || n === null || pidle === null || pmax === null) {
       showError("Preenche todos os campos obrigatórios.");
       return;
     }
@@ -251,7 +266,7 @@ function main() {
       return;
     }
 
-    // coerência com u(t)
+    // coerência com u(t) (agora garantida por valores internos, mas mantemos validação)
     if (base < 0 || base > 1 || amp < 0 || amp > 1) {
       showError("Base e amplitude da carga devem estar entre 0 e 1.");
       return;
