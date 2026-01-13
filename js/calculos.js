@@ -20,6 +20,50 @@ function showError(msg) {
   erro.innerHTML = msg ? `<p style="color:#a40000;font-weight:600">${msg}</p>` : "";
 }
 
+// Mostra/esconde inputs conforme o cenário (mantém o resto igual)
+function atualizarCamposPorCenario() {
+  const cenarioEl = document.getElementById("cenario");
+  if (!cenarioEl) return;
+
+  const cenario = cenarioEl.value;
+
+  const campoT0 = document.getElementById("campo-t0");
+  const campoK = document.getElementById("campo-k");
+  const campoLimite = document.getElementById("campo-limite");
+
+  const inputT0 = document.getElementById("t0");
+  const inputK = document.getElementById("k");
+  const inputLimite = document.getElementById("limite");
+
+  // Esconde tudo por defeito
+  if (campoT0) campoT0.style.display = "none";
+  if (campoK) campoK.style.display = "none";
+  if (campoLimite) campoLimite.style.display = "none";
+
+  // Pico: mostrar t0 e k
+  if (cenario === "pico") {
+    if (campoT0) campoT0.style.display = "";
+    if (campoK) campoK.style.display = "";
+    // Limite não se aplica
+    if (inputLimite) inputLimite.value = "";
+  }
+
+  // Poupança: mostrar limite L
+  if (cenario === "poupanca") {
+    if (campoLimite) campoLimite.style.display = "";
+    // t0 e k não se aplicam
+    if (inputT0) inputT0.value = "";
+    if (inputK) inputK.value = "";
+  }
+
+  // Normal: não mostrar nenhum destes
+  if (cenario === "normal") {
+    if (inputT0) inputT0.value = "";
+    if (inputK) inputK.value = "";
+    if (inputLimite) inputLimite.value = "";
+  }
+}
+
 // Só recomenda o método (sem hints por baixo do cenário)
 function setMetodoRecomendado() {
   const cenarioEl = document.getElementById("cenario");
@@ -89,8 +133,16 @@ function main() {
 
   // Método recomendado por cenário (sem hints)
   const cenarioEl = document.getElementById("cenario");
-  if (cenarioEl) cenarioEl.addEventListener("change", setMetodoRecomendado);
+  if (cenarioEl) {
+    cenarioEl.addEventListener("change", () => {
+      setMetodoRecomendado();
+      atualizarCamposPorCenario();
+      showError(""); // limpa erro ao trocar cenário
+    });
+  }
+
   setMetodoRecomendado();
+  atualizarCamposPorCenario();
 
   // Submit
   form.addEventListener("submit", (e) => {
@@ -139,7 +191,7 @@ function main() {
       return;
     }
 
-    // ✅ coerência com u(t) (carga relativa)
+    // coerência com u(t) (carga relativa)
     if (base < 0 || base > 1 || amp < 0 || amp > 1) {
       showError("Base e amplitude da carga devem estar entre 0 e 1.");
       return;
@@ -171,7 +223,7 @@ function main() {
     // Se t0 não vier, assume meio do intervalo
     const t0 = (t0raw === null) ? (a + b) / 2 : t0raw;
 
-    // ✅ mais rigor: se o utilizador forneceu t0, validar que está em [a,b]
+    // mais rigor: se o utilizador forneceu t0, validar que está em [a,b]
     if (cenario === "pico" && t0raw !== null && (t0raw < a || t0raw > b)) {
       showError("No cenário Pico, t₀ deve estar dentro do intervalo [a, b].");
       return;
