@@ -20,6 +20,14 @@ function showError(msg) {
   erro.innerHTML = msg ? `<p style="color:#a40000;font-weight:600">${msg}</p>` : "";
 }
 
+// Nome bonito para mostrar nos resultados
+function nomeCenario(c) {
+  if (c === "normal") return "Funcionamento normal";
+  if (c === "pico") return "Pico de utilização";
+  if (c === "poupanca") return "Poupança energética";
+  return c;
+}
+
 // Recomendação automática do método (sem hints)
 function setMetodoRecomendado() {
   const cenarioEl = document.getElementById("cenario");
@@ -66,17 +74,14 @@ function applyScenarioUI() {
   setFieldState("limite", { show: c === "poupanca", required: true, blockId: "block-limite" });
 
   // Tarifa sempre visível (custo em todos os cenários)
-  // (não precisa de blocoId porque não escondemos)
   const tarifaEl = document.getElementById("tarifa");
   if (tarifaEl) {
     tarifaEl.disabled = false;
     tarifaEl.required = false;
   }
 
-  // Limpar mensagens/resultado ao trocar cenário (fica mais limpo)
+  // Limpar só erros ao trocar cenário (mantemos os resultados)
   showError("");
-  const out = document.getElementById("out");
-  if (out) out.style.display = "none";
 }
 
 /* ==========================
@@ -134,6 +139,43 @@ function integrarSimpson(P, a, b, n) {
 
   // t em horas ⇒ Wh
   return (h / 3) * soma;
+}
+
+/* ==========================
+   Render de resultados (acumulado)
+   ========================== */
+
+function appendResultado({ cenario, metodo, a, b, n, Wh, kWh, tarifa }) {
+  const out = document.getElementById("out");
+  if (!out) return;
+
+  out.style.display = "block";
+
+  // separador (não no primeiro bloco)
+  if (out.children.length > 0) {
+    const hr = document.createElement("hr");
+    out.appendChild(hr);
+  }
+
+  const custoStr = (tarifa === null) ? "—" : (kWh * tarifa).toFixed(2);
+  const co2Str = (kWh * EMISSAO_CO2_KG_POR_KWH).toFixed(2);
+
+  const bloco = document.createElement("div");
+  bloco.innerHTML = `
+    <div style="margin-bottom:8px;">
+      <strong>Cenário:</strong> ${nomeCenario(cenario)}
+      <span style="color:#555;"> — ${metodo === "simpson" ? "Simpson" : "Trapézios"} (n=${n})</span>
+    </div>
+    <div style="color:#555;margin-bottom:8px;">
+      Intervalo: [${a}, ${b}] horas
+    </div>
+    <div><strong>Energia consumida:</strong> ${kWh.toFixed(2)} kWh</div>
+    <div><strong>Energia consumida:</strong> ${Wh.toFixed(2)} Wh</div>
+    <div><strong>Custo:</strong> ${custoStr} €</div>
+    <div><strong>Emissões CO₂:</strong> ${co2Str} kg</div>
+  `;
+
+  out.appendChild(bloco);
 }
 
 function main() {
@@ -257,28 +299,8 @@ function main() {
 
     const kWh = Wh / 1000;
 
-    // Mostrar resultados
-    const out = document.getElementById("out");
-    if (out) out.style.display = "block";
-
-    const energiaEl = document.getElementById("energia");
-    const energiaWhEl = document.getElementById("energiaWh");
-    const custoEl = document.getElementById("custo");
-    const co2El = document.getElementById("co2");
-
-    if (energiaEl) energiaEl.textContent = kWh.toFixed(6);
-    if (energiaWhEl) energiaWhEl.textContent = Wh.toFixed(3);
-
-    // Custo (só se tarifa existir; senão fica "—")
-    if (custoEl) {
-      custoEl.textContent = (tarifa === null) ? "—" : (kWh * tarifa).toFixed(4);
-    }
-
-    // CO2 automático
-    if (co2El) {
-      const co2 = kWh * EMISSAO_CO2_KG_POR_KWH;
-      co2El.textContent = co2.toFixed(4);
-    }
+    // Acrescentar bloco de resultados (2 casas decimais)
+    appendResultado({ cenario, metodo, a, b, n, Wh, kWh, tarifa });
   });
 }
 

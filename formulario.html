@@ -83,6 +83,13 @@
       color: #111;
       font-weight: 600;
     }
+
+    /* opcional: risco mais suave */
+    .out hr{
+      margin: 16px 0;
+      border: 0;
+      border-top: 1px solid #ddd;
+    }
   </style>
 </head>
 
@@ -130,7 +137,6 @@
         <input id="n" type="number" step="1" min="1" required>
       </div>
 
-      <!-- (t0) bloco com id para facilitar show/hide -->
       <div id="block-t0">
         <label for="t0">Centro do pico t₀ (apenas no pico)</label>
         <input id="t0" type="number" step="0.001">
@@ -159,13 +165,11 @@
       </div>
 
       <!-- LINHA 6 -->
-      <!-- (k) bloco com id -->
       <div id="block-k">
         <label for="k">Parâmetro k (apenas no pico)</label>
         <input id="k" type="number" step="0.1">
       </div>
 
-      <!-- (limite) bloco com id -->
       <div id="block-limite">
         <label for="limite">Limite máximo L (W) — apenas na poupança</label>
         <input id="limite" type="number" step="0.1" min="0">
@@ -185,13 +189,8 @@
       <div class="full warn" id="erro"></div>
     </form>
 
-    <!-- RESULTADOS -->
-    <div class="out" id="out" style="display:none;">
-      <div><strong>Energia consumida (kWh):</strong> <span id="energia"></span></div>
-      <div><strong>Energia consumida (Wh):</strong> <span id="energiaWh"></span></div>
-      <div><strong>Custo (€):</strong> <span id="custo">—</span></div>
-      <div><strong>Emissões CO₂ (kg):</strong> <span id="co2"></span></div>
-    </div>
+    <!-- RESULTADOS: agora é um container que acumula blocos -->
+    <div class="out" id="out" style="display:none;"></div>
 
   </div>
 
