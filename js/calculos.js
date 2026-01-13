@@ -1,5 +1,6 @@
 // js/calculos.js
 // Lógica de cálculo (u(t), P(t), integrais) separada do HTML
+// Resultados acumulados (não desaparecem ao trocar cenário)
 
 // CO2 calculado automaticamente (o utilizador NÃO insere nada)
 const EMISSAO_CO2_KG_POR_KWH = 0.25; // ajusta apenas se o relatório usar outro valor
@@ -42,7 +43,10 @@ function setMetodoRecomendado() {
    UI dinâmica por cenário
    ========================== */
 
-function setFieldState(inputId, { show = true, required = false, clearWhenHide = true, blockId = null } = {}) {
+function setFieldState(
+  inputId,
+  { show = true, required = false, clearWhenHide = true, blockId = null } = {}
+) {
   const el = document.getElementById(inputId);
   if (!el) return;
 
@@ -80,7 +84,10 @@ function applyScenarioUI() {
     tarifaEl.required = false;
   }
 
-  // Limpar só erros ao trocar cenário (mantemos os resultados)
+  // IMPORTANTE: NÃO TOCAR NO #out AQUI
+  // (para manter os resultados visíveis ao trocar cenário)
+
+  // Limpar apenas erros
   showError("");
 }
 
@@ -149,12 +156,12 @@ function appendResultado({ cenario, metodo, a, b, n, Wh, kWh, tarifa }) {
   const out = document.getElementById("out");
   if (!out) return;
 
+  // garantir visível
   out.style.display = "block";
 
   // separador (não no primeiro bloco)
   if (out.children.length > 0) {
-    const hr = document.createElement("hr");
-    out.appendChild(hr);
+    out.appendChild(document.createElement("hr"));
   }
 
   const custoStr = (tarifa === null) ? "—" : (kWh * tarifa).toFixed(2);
@@ -184,11 +191,11 @@ function main() {
 
   const cenarioEl = document.getElementById("cenario");
 
-  // Aplicar UI e método logo ao carregar
+  // UI e método ao carregar
   setMetodoRecomendado();
   applyScenarioUI();
 
-  // Quando muda o cenário: atualiza método recomendado + UI
+  // Troca de cenário: atualiza inputs e método, MAS não apaga resultados
   if (cenarioEl) {
     cenarioEl.addEventListener("change", () => {
       setMetodoRecomendado();
