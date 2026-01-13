@@ -171,7 +171,6 @@ function appendResultado({ cenario, metodo, a, b, n, Wh, kWh, tarifa }) {
   bloco.innerHTML = `
     <div style="margin-bottom:8px;">
       <strong>Cenário:</strong> ${nomeCenario(cenario)}
-      <span style="color:#555;"> — ${metodo === "simpson" ? "Simpson" : "Trapézios"} (n=${n})</span>
     </div>
     <div style="color:#555;margin-bottom:8px;">
       Intervalo: [${a}, ${b}] horas
