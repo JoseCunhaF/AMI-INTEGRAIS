@@ -84,7 +84,6 @@
       font-weight: 600;
     }
 
-    /* opcional: risco mais suave */
     .out hr{
       margin: 16px 0;
       border: 0;
@@ -131,7 +130,7 @@
         <input id="b" type="number" step="0.001" required>
       </div>
 
-      <!-- LINHA 3 (tarifa ao lado do n) -->
+      <!-- LINHA 3 -->
       <div>
         <label for="n">Número de subdivisões (n)</label>
         <input id="n" type="number" step="1" min="1" required>
@@ -143,33 +142,34 @@
       </div>
 
       <!-- LINHA 4 -->
-      <div id="block-t0">
-        <label for="t0">Centro do pico t₀ </label>
-        <input id="t0" type="number" step="0.001">
-      </div>
       <div>
         <label for="pidle">P<sub>idle</sub> (W)</label>
         <input id="pidle" type="number" step="0.1" min="0" required>
       </div>
 
-      <!-- LINHA 5 -->
       <div>
         <label for="pmax">P<sub>max</sub> (W)</label>
         <input id="pmax" type="number" step="0.1" min="0" required>
       </div>
 
+      <!-- LINHA 5 (apenas no pico) -->
+      <div id="block-t0">
+        <label for="t0">Centro do pico t₀ (apenas no pico)</label>
+        <input id="t0" type="number" step="0.001">
+      </div>
+
       <div id="block-k">
-        <label for="k">Parâmetro K</label>
+        <label for="k">Parâmetro k (apenas no pico)</label>
         <input id="k" type="number" step="0.1">
       </div>
 
-      <!-- LINHA 7 -->
+      <!-- LINHA 6 -->
       <div id="block-limite">
-        <label for="limite">Limite máximo (W) </label>
+        <label for="limite">Limite máximo L (W) — apenas na poupança</label>
         <input id="limite" type="number" step="0.1" min="0">
       </div>
 
-      <!-- BOTÃO centrado -->
+      <!-- BOTÃO -->
       <div class="full" style="display:flex;justify-content:center;">
         <button type="submit">Calcular energia</button>
       </div>
@@ -177,7 +177,6 @@
       <div class="full warn" id="erro"></div>
     </form>
 
-    <!-- RESULTADOS: container que acumula blocos -->
     <div class="out" id="out" style="display:none;"></div>
 
   </div>
