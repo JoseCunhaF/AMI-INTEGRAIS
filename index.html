@@ -143,6 +143,26 @@
       Modelo da potência instantânea do servidor em função da carga do CPU.
     </div>
 
+    <!-- NOVAS FÓRMULAS (POUPANÇA ENERGÉTICA) -->
+    <div class="formula">
+      \[
+        u_{eco}(t)=\min\{u(t),\,L\}
+      \]
+    </div>
+    <div class="formula-desc">
+      A carga do CPU é limitada por um valor máximo \(L\), evitando picos de utilização.
+    </div>
+
+    <div class="formula">
+      \[
+        P_{eco}(t)=P_{idle}+\bigl(P_{max}-P_{idle}\bigr)\,u_{eco}(t)
+      \]
+    </div>
+    <div class="formula-desc">
+      Potência do servidor com política de poupança: quando a carga tenta ultrapassar \(L\),
+      a potência deixa de aumentar e os picos são “cortados”.
+    </div>
+
     <div class="formula">
       \[
         C = T \cdot E_{kWh}
